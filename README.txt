@@ -4,7 +4,7 @@ BOM:
 - Arduino Nano RP2040
 = Peristaltic Pump Housing
 - 2M x 8mm screws
-- BLE PCB
+- Stepper Board Nano_BLE_TMC_220x
 
 You can find here:
 - Arduino code which has to be uploaded to the microcontroller "Arduino Nano BLE 33". This code enables communication between the Trinamic stepper drivers and your personal computer
