@@ -40,7 +40,7 @@ float target_steps_fractionArm = 0;
 float steps_per_pump_fraction = 0;
 float target_steps_pump = 0;  
 
-//BLEPeripheral blePeripheral;  // BLE Peripheral Device (the board you're programming)
+// BLEPeripheral blePeripheral;  // BLE Peripheral Device (the board you're programming)
 BLEService pumpService("19B10000-E8F2-537E-4F6C-D104768A1214"); // BLE LED Service
 
 // BLE Stepper Steps Characteristic - custom 128-bit UUID, read and writable by central
@@ -58,7 +58,7 @@ BLEUnsignedCharCharacteristic fractionstepsCharacteristic("f664f283-8129-4236-93
 
 void setup() {
   Serial.begin(19200);
-  // set LED pin to output mode
+  // Set LED pin to output mode
   pinMode(LED_BUILTIN, OUTPUT);
   if (!BLE.begin()) 
   {
@@ -66,10 +66,10 @@ void setup() {
   while (1);
   }
 
-  // set advertised local name
+  // Set advertised local name
   BLE.setLocalName("BLE-Pump");
 
-  // add service and characteristic:
+  // Add service and characteristic:
   BLE.setAdvertisedService(pumpService);
   pumpService.addCharacteristic(stepsCharacteristic);
   pumpService.addCharacteristic(speedCharacteristic);
@@ -77,34 +77,34 @@ void setup() {
   pumpService.addCharacteristic(fractionstepsCharacteristic);
   BLE.addService(pumpService);
 
-  // begin advertising BLE service:
+  // Begin advertising BLE service:
   BLE.advertise();
   Serial.println("Bluetooth device active, waiting for connections...");
 
-  // deactivate driver (LOW active)
+  // Deactivate driver (LOW active)
   pinMode(enPin_pump, OUTPUT);
   pinMode(enPin_fractionArm, OUTPUT);
   digitalWrite(enPin_pump, HIGH); 
   digitalWrite(enPin_fractionArm, HIGH);
-  // set dirPin to LOW
+  // Set dirPin to LOW
   pinMode(dirPin_pump, OUTPUT);
   pinMode(dirPin_fractionArm, OUTPUT);
   digitalWrite(dirPin_pump, LOW); //LOW or HIGH
   digitalWrite(dirPin_fractionArm, LOW); //LOW or HIGH
-  // set stepPin to LOW
+  // Set stepPin to LOW
   pinMode(stepPin_pump, OUTPUT);
   pinMode(stepPin_fractionArm, OUTPUT);
   digitalWrite(stepPin_pump, LOW);
   digitalWrite(stepPin_fractionArm, LOW);
-  //Set modi between 0=stealthChop and 1=spreadCycle of all connected stepper drivers (TMC220x)
+  // Set modi between 0=stealthChop and 1=spreadCycle of all connected stepper drivers (TMC220x)
   pinMode(spreadPin, OUTPUT);
   digitalWrite(spreadPin, LOW);
-  //Set pump stepper to 1/16 microstepping
+  // Set pump stepper to 1/16 microstepping
   pinMode(ms1Pin_pump, OUTPUT);
   digitalWrite(ms1Pin_pump, HIGH);
   pinMode(ms2Pin_pump, OUTPUT);
   digitalWrite(ms2Pin_pump, HIGH);
-  //Set fraction stepper to 1/8 microstepping
+  // Set fraction stepper to 1/8 microstepping
   pinMode(ms1Pin_fractionArm, OUTPUT);
   digitalWrite(ms1Pin_fractionArm, LOW);
   pinMode(ms2Pin_fractionArm, OUTPUT);
@@ -113,17 +113,17 @@ void setup() {
   digitalWrite(enPin_pump, LOW); //activate driver
   digitalWrite(enPin_fractionArm, LOW); //activate driver
 
-  // set the maximum speed in steps per second
+  // Set the maximum speed in steps per second
   stepper_pump.setMaxSpeed(2000);
   stepper_fractionArm.setMaxSpeed(2000);
 
-  // set Current Position
+  // Set Current Position
   stepper_pump.setCurrentPosition(0); 
   stepper_fractionArm.setCurrentPosition(0); 
 }
 
 void loop() {
-  // listen for BLE peripherals to connect:
+  // Listen for BLE peripherals to connect:
   BLEDevice central = BLE.central();
 
   // if a central is connected to peripheral:
@@ -146,13 +146,13 @@ void loop() {
     while (central.connected()) {
       
       
-      //collect 1 byte in total, which indcates the mode
+      // collect 1 byte in total, which indcates the mode
       if (modeCharacteristic.written()) {
         mode_index = modeCharacteristic.value() - '0';
         Serial.println("Mode: " + String(mode_index)); 
       }
       
-      //collect 10 bytes in total, transfrom each byte to single number and concat each to from a long number
+      // collect 10 bytes in total, transfrom each byte to single number and concat each to from a long number
       if (fractionstepsCharacteristic.written()) {
         int value = fractionstepsCharacteristic.value() - '0';
         data_fractionsteps.concat(value);
@@ -166,7 +166,7 @@ void loop() {
         }
       }
       
-      //collect 10 bytes in total, transfrom each byte to single number and concat each to from a long number
+      // collect 10 bytes in total, transfrom each byte to single number and concat each to from a long number
       if (stepsCharacteristic.written()) {
         int value = stepsCharacteristic.value() - '0';
         data_steps.concat(value);
@@ -180,7 +180,7 @@ void loop() {
         }
       }
       
-      //collect 10 bytes in total, transfrom each byte to single number and concat each to from a long number
+      // collect 10 bytes in total, transfrom each byte to single number and concat each to from a long number
       if (speedCharacteristic.written()) {
         int value = speedCharacteristic.value() - '0';
         data_speed.concat(value);
@@ -222,19 +222,19 @@ void loop() {
     digitalWrite(LED_BUILTIN, LOW); 
   }
 
-  //Move pump stepper motor as long not all steps have been perfomed 
+  // Move pump stepper motor as long not all steps have been perfomed 
   if (stepper_pump.currentPosition() != total_steps_pump) {
     stepper_pump.setSpeed(steps_per_second_pump);
     stepper_pump.runSpeed();
   }
   
-  //Move fraction arm as long not all steps have been perfomed
+  // Move fraction arm as long not all steps have been perfomed
   if (stepper_fractionArm.currentPosition() != target_steps_fractionArm) {
     stepper_fractionArm.setSpeed(steps_per_second_fractionArm);
     stepper_fractionArm.runSpeed();
   }
 
-  //Update arm target position if new fraction begins
+  // Update arm target position if new fraction begins
   if (stepper_pump.currentPosition() > target_steps_pump) {
     if(mode_index == 2){
     target_steps_fractionArm += fractionArm_switchSteps;      // Move to next tube
@@ -246,7 +246,7 @@ void loop() {
     }
   }
 
-  //Bring fraction arm back to start position 
+  // Bring fraction arm back to start position 
   if (stepper_pump.currentPosition() == total_steps_pump) {
     delayMicroseconds(3000);                                // Wait for last droplet
     while(stepper_fractionArm.currentPosition() != 0){
