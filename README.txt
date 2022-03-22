@@ -1,4 +1,4 @@
-## Peristaltic Pump BLE
+## OpenSource Protein Purifier
 
 BOM:
 - Arduino Nano RP2040
@@ -12,7 +12,7 @@ You can find here:
 
 Graphical user interface of the Syringe Pump app:
 
-![BLE pump GUI logo](https://raw.githubusercontent.com/BastianWagner/Syringe_Pump/master/Syringe_pump_GUI_1.png)
+![BLE pump GUI logo](https://raw.githubusercontent.com/BastianWagner/OpenSource_Protein_Purifier/master/Protein_Purifier_1.png)
 
 
 GUI was coded in python with PyQt5:
